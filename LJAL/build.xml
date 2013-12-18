@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project name="LJAL" default="jar">
+	
+	<property name="src.dir" value="src"/>
+
+	<property name="build.dir" value="build"/>
+	<property name="classes.dir" value="${build.dir}/classes"/>
+	<property name="debug-classes.dir" value="${build.dir}/debug"/>
+	<property name="jar.dir" value="${build.dir}/jar"/>
+	
+	<property name="bin.dir" value="bin"/>
+
+	<property name="main.class" value="LocalJointActionLearners"/>
+	
+	<target name="clean" description="Cleans all generated files">
+		<delete dir="${build.dir}"/>
+		<delete dir="${bin.dir}"/>
+	</target>
+	
+	<target name="compile" description="Compiles source files">
+		<mkdir dir="${classes.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false"/>
+	</target>
+
+	<target name="jar" depends="compile" description="Generates a jar file">
+		<mkdir dir="${jar.dir}"/>
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}"/>
+				<attribute name="Class-Path" value="${jar.classpath}"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run" depends="jar" description="Runs the program">
+		<java fork="true" classname="${main.class}">
+			<classpath>
+				<path location="${jar.dir}/${ant.project.name}.jar"/>
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="install" depends="jar" description="Installs the jar and libraries to bin">
+		<mkdir dir="${bin.dir}"/>
+		<copy file="${jar.dir}/${ant.project.name}.jar" todir="${bin.dir}"/>
+	</target>
+	
+	<target name="debug" description="Runs the program with debugging turned, accepting debugger connections on port 5432">
+		<mkdir dir="${debug-classes.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${debug-classes.dir}" includeantruntime="false" debug="true" debuglevel="lines,vars,source"/>
+		<java fork="true" classname="${main.class}">
+			<classpath>
+				<pathelement location="${debug-classes.dir}"/>
+			</classpath>
+			<jvmarg value="-Xdebug"/>
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5432"/>
+		</java>
+	</target>
+	
+</project>
