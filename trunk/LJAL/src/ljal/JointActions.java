@@ -32,7 +32,7 @@ public class JointActions implements Iterable<JointAction> {
 	/**
 	 * Returns a new iterator over all the joint actions
 	 * 
-	 * @return A new read-only iterator, that doesn't support removal
+	 * @return A new read-only iterator, that doens't support removal
 	 */
 	@Override
 	public Iterator<JointAction> iterator() {
