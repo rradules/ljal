@@ -8,6 +8,15 @@ import java.util.HashMap;
  */
 public class Agent {
 
+    private int m_actions;
+    private SelectionAlgorithm m_selection;
+    private double m_alpha;
+    private Agent[] m_neighbors;
+    private double[] m_Q;
+    private HashMap<Agent, double[]> m_F;
+    private int m_last_action;
+    private int m_updates;
+
     /**
      * Constructor
      *
@@ -16,6 +25,7 @@ public class Agent {
      * @param alpha The learning constant
      */
     public Agent(int actions, SelectionAlgorithm selection, double alpha) {
+        m_F = new HashMap<>();
         m_actions = actions;
         m_selection = selection;
         m_alpha = alpha;
@@ -80,6 +90,8 @@ public class Agent {
 
         m_Q[m_last_action + m_actions * jointAction] += m_alpha * (reward - m_Q[m_last_action + m_actions * jointAction]);
 
+        // are you sure you did everything you wanted here?
+        //you never use the values from  double[] F_neighbor
         for (Agent neighbor : m_neighbors) {
             double[] F_neighbor = m_F.get(neighbor);
             for (int i = 0; i < neighbor.m_actions; ++i) {
@@ -122,12 +134,4 @@ public class Agent {
 
         return EV;
     }
-    private int m_actions;
-    private SelectionAlgorithm m_selection;
-    private double m_alpha;
-    private Agent[] m_neighbors;
-    private double[] m_Q;
-    private HashMap<Agent, double[]> m_F;
-    private int m_last_action;
-    private int m_updates;
 }
