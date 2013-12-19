@@ -5,7 +5,7 @@ package ljal;
  */
 public class CoordinationGraphs {
 	
-	public static int[][] independantLearners(int agents) {
+	public static int[][] independentLearners(int agents) {
 		return new int[agents][0];
 	}
 	
@@ -13,7 +13,7 @@ public class CoordinationGraphs {
 		int[][] graph = new int[agents][agents - 1];
 		for (int i = 0; i < agents; ++i) {
 			for (int j = 0; j < agents-1; ++j) {
-				graph[i][j < i ? j : j + 1] = j;
+				graph[i][j] = j < i ? j : j + 1;
 			}
 		}
 		return graph;

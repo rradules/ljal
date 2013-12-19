@@ -1,5 +1,6 @@
 package ljal;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -47,16 +48,12 @@ public class Agent {
 		m_jointNeighborActions = new JointActions(neighbors);
 		
 		m_Q = new double[m_actions * m_jointNeighborActions.getCount()];
-		for (int i = 0; i < m_Q.length; ++i) {
-			m_Q[i] = 0;
-		}
+		Arrays.fill(m_Q, 0);
 		
 		m_F = new HashMap<Agent, double[]>();
 		for (Agent neighbor : m_neighbors) {
 			double[] F_neighbor = new double[neighbor.m_actions];
-			for (int i = 0; i < F_neighbor.length; ++i) {
-				F_neighbor[i] = 0.0;
-			}
+			Arrays.fill(F_neighbor, 0.0);
 			m_F.put(neighbor, F_neighbor);
 		}
 	}
@@ -108,9 +105,7 @@ public class Agent {
 	
 	private double[] estimatedValues() {
 		double[] EV = new double[m_actions];
-		for (int i = 0; i < EV.length; ++i) {
-			EV[i] = 0.0;
-		}
+		Arrays.fill(EV, 0.0);
 		
 		for (JointAction jointAction : m_jointNeighborActions) {
 			double probability = 1.0;
