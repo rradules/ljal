@@ -1,8 +1,8 @@
 package ljal;
 
-class LocalJointActionLearners {
+public class LocalJointActionLearners {
 	
-	LocalJointActionLearners(int[][] coordinationGraph, int actions, SelectionAlgorithm selection, double alpha) {
+	public LocalJointActionLearners(int[][] coordinationGraph, int actions, SelectionAlgorithm selection, double alpha) {
 		m_coordinationGraph = coordinationGraph;
 		m_actions = actions;
 		m_selection = selection;

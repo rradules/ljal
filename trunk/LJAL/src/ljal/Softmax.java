@@ -17,7 +17,7 @@ public class Softmax implements SelectionAlgorithm {
 		
 		double maxEV = Double.NEGATIVE_INFINITY;
 		for (double ev : EV) {
-			maxEV = ev > maxEV ? ev : maxEV;
+			maxEV = Math.max(ev, maxEV);
 		}
 		
 		double[] probabilities = new double[EV.length];
