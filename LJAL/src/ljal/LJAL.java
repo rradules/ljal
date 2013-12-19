@@ -15,6 +15,8 @@ public class LJAL {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("");
+        Agent agent = new Agent(2, null, 0.1);
+
+        System.out.println(agent.getActions());
     }
 }
