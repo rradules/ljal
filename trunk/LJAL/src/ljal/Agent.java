@@ -12,6 +12,7 @@ public class Agent {
     private SelectionAlgorithm m_selection;
     private double m_alpha;
     private Agent[] m_neighbors;
+    private JointActions m_jointNeighborActions;
     private double[] m_Q;
     private HashMap<Agent, double[]> m_F;
     private int m_last_action;
@@ -34,14 +35,16 @@ public class Agent {
     }
 
     /**
-     * Sets the neighbors of this agent
+     * Sets the neighbors of this agent Must be called before other the
+     * selection and update methods are used
      *
      * @param neighbors A list of neighboring agents
      */
     public void setNeighbors(Agent[] neighbors) {
         m_neighbors = neighbors;
+        m_jointNeighborActions = new JointActions(neighbors);
 
-        m_Q = new double[m_actions * jointNeighborActions()];
+        m_Q = new double[m_actions * m_jointNeighborActions.getCount()];
         for (int i = 0; i < m_Q.length; ++i) {
             m_Q[i] = 0;
         }
@@ -81,17 +84,14 @@ public class Agent {
      * @param reward
      */
     public void update(double reward) {
-        int jointAction = 0;
-        int tmp = 1;
-        for (Agent agent : m_neighbors) {
-            jointAction += tmp * agent.m_last_action;
-            tmp *= agent.m_actions;
+        int[] lastNeighborActions = new int[m_neighbors.length];
+        for (int i = 0; i < m_neighbors.length; ++i) {
+            lastNeighborActions[i] = m_neighbors[i].m_last_action;
         }
+        int jointActionIndex = new JointAction(m_neighbors, lastNeighborActions).prependedActionIndex(this, m_last_action);
 
-        m_Q[m_last_action + m_actions * jointAction] += m_alpha * (reward - m_Q[m_last_action + m_actions * jointAction]);
+        m_Q[jointActionIndex] += m_alpha * (reward - m_Q[jointActionIndex]);
 
-        // are you sure you did everything you wanted here?
-        //you never use the values from  double[] F_neighbor
         for (Agent neighbor : m_neighbors) {
             double[] F_neighbor = m_F.get(neighbor);
             for (int i = 0; i < neighbor.m_actions; ++i) {
@@ -103,32 +103,21 @@ public class Agent {
         m_updates += 1;
     }
 
-    private int jointNeighborActions() {
-        int jointActions = 1;
-        for (Agent neighbor : m_neighbors) {
-            jointActions *= neighbor.m_actions;
-        }
-        return jointActions;
-    }
-
     private double[] estimatedValues() {
         double[] EV = new double[m_actions];
         for (int i = 0; i < EV.length; ++i) {
             EV[i] = 0.0;
         }
 
-        int jointActions = jointNeighborActions();
-        for (int i = 0; i < jointActions; ++i) {
-            int index = i;
+        for (JointAction jointAction : m_jointNeighborActions) {
             double probability = 1.0;
-            for (Agent neighbor : m_neighbors) {
-                double[] F_neighbor = m_F.get(neighbor);
-                probability *= F_neighbor[index % F_neighbor.length];
-                index /= F_neighbor.length;
+            for (int i = 0; i < m_neighbors.length; ++i) {
+                double[] F_neighbor = m_F.get(m_neighbors[i]);
+                probability *= F_neighbor[jointAction.getActions()[i]];
             }
 
-            for (int j = 0; j < m_actions; j++) {
-                EV[j] += m_Q[j + m_actions * i] * probability;
+            for (int i = 0; i < m_actions; i++) {
+                EV[i] += m_Q[jointAction.prependedActionIndex(this, i)] * probability;
             }
         }
 
